@@ -1,42 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
+import './App.css';
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [tasks, setTasks] = useState([]);
+  const [newTask, setNewTask] = useState('');
 
-  useEffect(() => {
-    axios.get('/api/todos').then((response) => {
-      setTodos(response.data);
-    });
-  }, []);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setTasks([...tasks, newTask]);
+    setNewTask('');
+  }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    axios.post('/api/todos', {
-      title,
-      description,
-    }).then((response) => {
-      setTodos([...todos, response.data]);
-      setTitle('');
-      setDescription('');
-    });
+  const handleDelete = (index) => {
+    const newTasks = [...tasks];
+    newTasks.splice(index, 1);
+    setTasks(newTasks);
   }
 
   return (
     <div className="App">
       <h1>To-Do List</h1>
       <form onSubmit={handleSubmit}>
-        <input type="text" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Title" required />
-        <input type="text" value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description" required />
-        <button type="submit">Add</button>
+        <input type="text" value={newTask} onChange={(e) => setNewTask(e.target.value)} />
+        <button>Add Task</button>
       </form>
       <ul>
-        {todos.map((todo) => (
-          <li key={todo._id}>
-            <h2>{todo.title}</h2>
-            <p>{todo.description}</p>
+        {tasks.map((task, index) => (
+          <li key={index}>
+            {task}
+            <button onClick={() => handleDelete(index)}>Delete</button>
           </li>
         ))}
       </ul>
